@@ -6,44 +6,46 @@ export const UI_LANGS = [
   ["ko", "한국어"],
 ];
 
-const customApiLangs = `["en", "English - English"],
-["zh-CN", "简体中文 - Simplified Chinese"],
-["zh-TW", "繁體中文 - Traditional Chinese"],
-["ar", "العربية - Arabic"],
-["bg", "Български - Bulgarian"],
-["ca", "Català - Catalan"],
-["hr", "Hrvatski - Croatian"],
-["cs", "Čeština - Czech"],
-["da", "Dansk - Danish"],
-["nl", "Nederlands - Dutch"],
-["fi", "Suomi - Finnish"],
-["fr", "Français - French"],
-["de", "Deutsch - German"],
-["el", "Ελληνικά - Greek"],
-["hi", "हिन्दी - Hindi"],
-["hu", "Magyar - Hungarian"],
-["id", "Indonesia - Indonesian"],
-["it", "Italiano - Italian"],
-["ja", "日本語 - Japanese"],
-["ko", "한국어 - Korean"],
-["ms", "Melayu - Malay"],
-["mt", "Malti - Maltese"],
-["nb", "Norsk Bokmål - Norwegian"],
-["pl", "Polski - Polish"],
-["pt", "Português - Portuguese"],
-["ro", "Română - Romanian"],
-["ru", "Русский - Russian"],
-["sk", "Slovenčina - Slovak"],
-["sl", "Slovenščina - Slovenian"],
-["es", "Español - Spanish"],
-["sv", "Svenska - Swedish"],
-["ta", "தமிழ் - Tamil"],
-["te", "తెలుగు - Telugu"],
-["th", "ไทย - Thai"],
-["tr", "Türkçe - Turkish"],
-["uk", "Українська - Ukrainian"],
-["vi", "Tiếng Việt - Vietnamese"],
-`;
+const LANG_CODES = [
+  "en", "zh-CN", "zh-TW", "ar", "bg", "ca", "hr", "cs", "da", "nl",
+  "fi", "fr", "de", "el", "hi", "hu", "id", "it", "ja", "ko",
+  "ms", "mt", "nb", "pl", "pt", "ro", "ru", "sk", "sl", "es",
+  "sv", "ta", "te", "th", "tr", "uk", "vi"
+];
+
+const NATIVE_NAMES = {
+  "en": "English", "zh-CN": "简体中文", "zh-TW": "繁體中文",
+  "ar": "العربية", "bg": "Български", "ca": "Català",
+  "hr": "Hrvatski", "cs": "Čeština", "da": "Dansk",
+  "nl": "Nederlands", "fi": "Suomi", "fr": "Français",
+  "de": "Deutsch", "el": "Ελληνικά", "hi": "हिन्दी",
+  "hu": "Magyar", "id": "Indonesia", "it": "Italiano",
+  "ja": "日本語", "ko": "한국어", "ms": "Melayu",
+  "mt": "Malti", "nb": "Norsk Bokmål", "pl": "Polski",
+  "pt": "Português", "ro": "Română", "ru": "Русский",
+  "sk": "Slovenčina", "sl": "Slovenščina", "es": "Español",
+  "sv": "Svenska", "ta": "தமிழ்", "te": "తెలుగు",
+  "th": "ไทย", "tr": "Türkçe", "uk": "Українська",
+  "vi": "Tiếng Việt"
+};
+
+function buildCustomApiLangs() {
+  const uiLang = (typeof navigator !== "undefined" && navigator.language) || "en";
+  let displayNames;
+  try {
+    displayNames = new Intl.DisplayNames([uiLang], { type: "language" });
+  } catch (e) {
+    displayNames = null;
+  }
+  return LANG_CODES.map(code => {
+    const native = NATIVE_NAMES[code] || code;
+    const localized = displayNames ? (displayNames.of(code) || native) : native;
+    const label = localized === native ? native : `${native} - ${localized}`;
+    return `["${code}", "${label}"]`;
+  }).join(",\n");
+}
+
+const customApiLangs = buildCustomApiLangs();
 
 const customApiHelpZH = `// 请求数据默认格式
 {
